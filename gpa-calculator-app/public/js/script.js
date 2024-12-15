@@ -5,14 +5,26 @@ const gpaDisplay = document.getElementById('gpa');
 let courses = [];
 
 const fetchCourses = async () => {
-    const response = await fetch('http://localhost:3000/courses');
-    courses = await response.json();
-    renderCourses();
-    updateGPA();
+    try {
+        const response = await fetch('http://localhost:3000/api/courses');
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            courses = data;
+        } else {
+            courses = [];
+            console.error('Expected an array but got:', data);
+        }
+
+        renderCourses();
+        updateGPA();
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+    }
 };
 
 const addCourse = async (course) => {
-    await fetch('http://localhost:3000/courses', {
+    await fetch('http://localhost:3000/api/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(course),
@@ -21,7 +33,7 @@ const addCourse = async (course) => {
 };
 
 const deleteCourse = async (id) => {
-    await fetch(`http://localhost:3000/courses/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:3000/api/courses/${id}`, { method: 'DELETE' });
     fetchCourses();
 };
 

@@ -1,23 +1,34 @@
+require('dotenv').config(); // Add this line at the top
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const coursesRoutes = require('./routes/courses.routes'); // Import the courses routes
-
-require('dotenv').config();
+const path = require('path');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-app.use(cors());
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
+const coursesRoutes = require('./routes/courses.routes');
+const { error404, error500 } = require('./middleware/errors.middleware');
+
+// Middleware setup
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
-app.use('/courses', coursesRoutes); // Use the courses routes
+// Register API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes); // Ensure this path is correct
+app.use('/api/courses', coursesRoutes);
 
-// Handle 404 errors (if a route is not found)
-app.use((req, res) => {
-    res.status(404).json({ message: 'Route not found' });
+// Handle 404 requests
+app.use(error404);
+
+// Handle 500 requests
+app.use(error500);
+
+app.listen(port, () => {
+  console.log(`Server running on port: ${port}...`);
 });
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-

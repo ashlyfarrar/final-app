@@ -1,8 +1,9 @@
-const validateCourseData = (data) => {
-    const { courseName, creditHours, grade } = data;
-    if (!courseName || !creditHours || !grade) {
-        throw new Error('Missing required course information');
-    }
+exports.serverError = (res) => (err) => {
+    console.log(err);
+    res.status(500).send({
+        error: {
+            msg: err.message,
+        },
+        msg: 'Cannot process response at this time. Please try again shortly.',
+    });
 };
-
-module.exports = { validateCourseData };

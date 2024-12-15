@@ -1,6 +1,12 @@
-const errorHandler = (err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
-};
-
-module.exports = errorHandler;
+exports.error404 = (req, res, next) => {
+    next({ msg: 'Not Found', status: 404 });
+  };
+  
+  exports.error500 = (error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+      error: {
+        msg: error.message,
+      }
+    });
+  };
